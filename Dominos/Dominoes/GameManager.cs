@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+
 namespace Dominoes
 {
     /**
@@ -20,13 +23,20 @@ namespace Dominoes
         DominoManager dominoManager;
         PlayerManager playerManager;
 
-        LinkedList<Domino> dominoBoard;
+        DominoBoard board;
 
         int currentPlayerIndex;
+        int turn;
 
-        public List<Domino> DominoBoard
+        // properties
+        public DominoManager DominoManager
         {
-            get { return dominoBoard.ToList(); }
+            get { return dominoManager; }
+        }
+
+        public DominoBoard Board
+        {
+            get { return board; }
         }
 
         public List<Player> PlayerList
@@ -34,82 +44,110 @@ namespace Dominoes
             get { return playerManager.PlayerList; }
         }
 
+        /// <summary>
+        /// Constructor for objects of class GameManager
+        /// </summary>
         public GameManager()
         {
             // initialize managers
             dominoManager = new DominoManager();
-            playerManager = new PlayerManager(dominoManager.GetDominoList());
+            playerManager = new PlayerManager(dominoManager.GetDominoQueue());
 
             // initialize board
-            dominoBoard = new LinkedList<Domino>();
+            board = new DominoBoard();
+            turn = 0;
         }
 
-        // adds domino to board while following game rules
-        public void AddDominoToBoard(Domino domino)
-        {
-            dominoBoard.AddLast(domino);
-        }
-
-        // tests game logic by randomly playing
-        public string TestGame()
+        /// <summary>
+        /// Temporary method that simulates a game of dominoes; used for testing purposes. 
+        /// </summary>
+        /// <param name="side"></param>
+        public string TestGame(bool side)
         {
             // handle case where board is empty
             bool cowPlayed = false;
             for (int i = 0; i < playerManager.PlayerList.Count; i++)
             {
-                // Print player hand
+                // print player hand
                 for (int j = 0; j < playerManager.PlayerList[i].PlayerHand.Count; j++)
                 {
                     Domino cow = playerManager.PlayerList[i].HasCow();
 
                     if (cow != null)
                     {
-                        // Add domino to board and remove it from player hand
-                        dominoBoard.AddLast(playerManager.PlayerList[i].PlayDomino(cow));
+                        // add domino to board and remove it from player hand
+                        AddDominoToBoard(playerManager.PlayerList[i].PlayDomino(cow), side);
 
-                        // Set the first player index
+                        // set the first player index
                         currentPlayerIndex = i;
                         cowPlayed = true;
-                        return "Cow has been played"; // Exit once cow is played
+                        turn += 1;
                     }
                 }
 
-                if (cowPlayed) break; // Exit outer loop once cow is played
+                // exit the loop once cow has been played
+                if (cowPlayed)
+                    return "Turn: " + turn + "\nPlayer #" + (currentPlayerIndex + 1) + " \nCow has been played";
             }
 
-            // Make sure player index is correct
+            // make sure player index is correct
             currentPlayerIndex = (currentPlayerIndex == 3) ? 0 : currentPlayerIndex + 1;
 
-            // Now, try to play a domino that matches the right side of the board
+            // now, try to play a domino that matches the right side of the board
             List<Domino> currentPlayerHand = playerManager.PlayerList[currentPlayerIndex].PlayerHand;
             for (int i = 0; i < currentPlayerHand.Count; i++)
             {
-                if (dominoBoard.Count > 0 && (
-                    currentPlayerHand[i].Top == dominoBoard.Last.Value.Top ||
-                    currentPlayerHand[i].Top == dominoBoard.Last.Value.Bottom ||
-                    currentPlayerHand[i].Bottom == dominoBoard.Last.Value.Top ||
-                    currentPlayerHand[i].Bottom == dominoBoard.Last.Value.Bottom))
+                if (board.Count > 0)
                 {
-                    dominoBoard.AddLast(currentPlayerHand[i]);
-                    currentPlayerHand.RemoveAt(i); // Remove played domino from hand
-                    return "Successful play";
+                    if (side)
+                    {
+                        if (board.IsHeadPlayable(currentPlayerHand[i]) && AddDominoToBoard(currentPlayerHand[i], side))
+                        {
+                            currentPlayerHand.RemoveAt(i); // remove played domino from hand
+                            turn += 1;
+                            return "Turn: " + turn + "\nPlayer #" + (currentPlayerIndex + 1) + "\nSuccessful play";
+                        }
+                    }
+                    else if (!side)
+                    {
+                        if (board.IsTailPlayable(currentPlayerHand[i]) && AddDominoToBoard(currentPlayerHand[i], side))
+                        {
+                            currentPlayerHand.RemoveAt(i); // remove played domino from hand
+                            turn += 1;
+                            return "Turn: " + turn + "\nPlayer #" + (currentPlayerIndex + 1) + " \nSuccessful play";
+                        }
+                    }
                 }
             }
 
-            // If no match is found, maybe handle the case where no move is possible
-            return "No matching domino found for player #" + (currentPlayerIndex + 1);
+            // if no match is found, maybe handle the case where no move is possible
+            turn += 1;
+            return "Turn: " + turn + " \nNo matching domino found for player #" + (currentPlayerIndex + 1);
         }
 
-        public string GetDominoBoard()
+        /// <summary>
+        /// Adds a domino to the board based on the given side
+        /// </summary>
+        /// <param name="domino"></param>
+        /// <param name="side"></param>
+        public bool AddDominoToBoard(Domino domino, bool side)
         {
-            string playerInfo = string.Empty;
+            bool added = false;
 
-            foreach (Domino domino in dominoBoard)
-            {
-                playerInfo += domino.ToString() + ", ";
-            }
+            if (side == true)
+                added = board.AddFirst(domino);
+            else if (side == false)
+                added = board.AddLast(domino);
 
-            return playerInfo;
+            return added;
+        }
+
+        /// <summary>
+        /// Returns information about the game state as a string
+        /// </summary>
+        public override string ToString()
+        {
+            return board.ToString();
         }
     }
 }

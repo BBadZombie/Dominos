@@ -38,7 +38,7 @@ namespace Dominoes
         {
             foreach (Domino domino in playerHand)
             {
-                if (domino.Top == 6 && domino.Bottom == 6)
+                if (domino.IsCow())
                     return domino;
             }
 

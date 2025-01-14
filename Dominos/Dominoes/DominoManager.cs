@@ -1,16 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.DirectoryServices.ActiveDirectory;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Color = Microsoft.Xna.Framework.Color;
+
 namespace Dominoes
 {
     /**
-     * Purpose: Manage dominoes
+     * Purpose: Manage dominoes by creating and shuffling them
      * Authors: Anthony Lopez
-     * Date: 12.16.24
+     * Date: 12.23.24
      * Modifications: 
      * Notes: 
      */
@@ -20,28 +25,37 @@ namespace Dominoes
         // variable declarations
         LinkedList<Domino> dominoList;
 
-        // constructor for objects of DominoManager
+        /// <summary>
+        /// Constructor for objects of class DominoManager
+        /// </summary>
         public DominoManager()
         {
             CreateDominoes();
-            PrintDominoList();
+            // PrintDominoList();
         }
 
-        // creates a standard set of 27 dominoes
+        /// <summary>
+        /// Initializes the set of dominoes
+        /// </summary>
         public void CreateDominoes()
         {
             dominoList = new LinkedList<Domino>();
+            Texture2D texture;
 
             for (int i = 0; i <= 6; i++)
             {
                 for (int j = i; j <= 6; j++)
                 {
-                    dominoList.AddLast(new Domino(i, j));
+                    texture = UI_Manager.GetTexture(i + " | " + j);
+
+                    dominoList.AddLast(new Domino(i, j, texture, 0, 0, texture.Width, texture.Height));
                 }
             }
         }
 
-        // prints dominoes for testing purposes
+        /// <summary>
+        /// Prints list of dominoes to debug output
+        /// </summary>
         public void PrintDominoList()
         {
             foreach (Domino domino in dominoList)
@@ -50,8 +64,10 @@ namespace Dominoes
             }
         }
 
-        // returns a shuffled set of dominoes for adding to player hand
-        public Queue<Domino> GetDominoList()
+        /// <summary>
+        /// Returns a queue of shuffled dominoes
+        /// </summary>
+        public Queue<Domino> GetDominoQueue()
         {
             // convert LinkedList to List for easier LINQ manipulation
             List<Domino> dominoListAsList = dominoList.ToList();
