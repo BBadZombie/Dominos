@@ -19,6 +19,7 @@ namespace Dominoes
     {
         // variable declaration
         List<Domino> playerHand;
+        int points;
 
         // properties
         public List<Domino> PlayerHand
@@ -52,6 +53,18 @@ namespace Dominoes
             playerHand.Remove(domino1);
 
             return domino1;
+        }
+
+        public int TotalScore()
+        {
+            int score = 0;
+
+            foreach (Domino domino in playerHand)
+            {
+                score += domino.Total;
+            }
+
+            return score;
         }
 
         public override string ToString()

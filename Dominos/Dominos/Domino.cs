@@ -25,7 +25,7 @@ namespace Dominoes
     internal class Domino : GameObject
     {
         // variable declarations
-        // represents numbers the dominoes hold
+        // represents numbers the Dominoes hold
         private int top;
         private int bottom;
 
@@ -41,6 +41,8 @@ namespace Dominoes
         // properties
         public int Top => top;
         public int Bottom => bottom;
+
+        public int Total => top + bottom;
 
         // neighbor properties
         public Domino? Previous

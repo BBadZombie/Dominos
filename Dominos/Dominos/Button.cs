@@ -66,8 +66,8 @@ namespace Dominoes
             Vector2 textSize = font.MeasureString(text);
 
             float x = (position.X + position.Width / 2) - textSize.X / 2;
-            float y;
-            textLoc = new Vector2((position.X + position.Width / 2) - textSize.X / 2, (position.Y + position.Height / 2) - textSize.Y / 2);
+            float y = (position.Y + position.Height / 2) - textSize.Y / 2;
+            textLoc = new Vector2(x, y);
 
             // Invert the button color for the text color (because why not)
             this.textColor = new Color(255 - color.R, 255 - color.G, 255 - color.B);
@@ -109,7 +109,29 @@ namespace Dominoes
                 }
             }
 
+            // drag function
+            Drag(gameTime);
+
             prevMState = mState;
+        }
+
+        // allows buttons to be dragged
+        public void Drag(GameTime gameTime)
+        {
+            // detect if left mouse button is being held down
+            MouseState mState = Mouse.GetState();
+
+            if (mState.LeftButton == ButtonState.Pressed && this.position.Contains(mState.Position))
+            {
+                // get mouse position
+                Vector2 mousePosition = new Vector2(mState.X, mState.Y);
+                // update button position to current position + mouse position
+                this.position.X = (int) mousePosition.X - this.position.Width / 2;
+                this.position.Y = (int) mousePosition.Y - this.position.Height / 2;
+
+                System.Diagnostics.Debug.WriteLine("Mouse Position: ({0}, {1})", mousePosition.X, mousePosition.Y);
+                System.Diagnostics.Debug.WriteLine("Button Position: ({0}, {1})", this.position.X, this.position.Y);
+            }
         }
 
         /// <summary>

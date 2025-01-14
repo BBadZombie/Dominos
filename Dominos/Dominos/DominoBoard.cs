@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.DirectoryServices.ActiveDirectory;
+// using System.DirectoryServices.ActiveDirectory;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -156,7 +156,7 @@ namespace Dominoes
         /// </summary>
         public void Clear()
         {
-            // because the dominoes are tied to each other, setting the head & tail
+            // because the Dominoes are tied to each other, setting the head & tail
             // to null deletes all their neighbor nodes. also reset the count back to 0
 
             head = null;
@@ -183,7 +183,7 @@ namespace Dominoes
         }
 
         /// <summary>
-        /// Returns true if given dominoes are compatible, false elsewise.
+        /// Returns true if given Dominoes are compatible, false elsewise.
         /// </summary>
         private bool Match(Domino domino1, Domino domino2)
         {
@@ -202,7 +202,7 @@ namespace Dominoes
                     match = true;
             }
 
-            // check when both dominoes are not double
+            // check when both Dominoes are not double
             if (domino1.Top == domino2.Top ||
                 domino1.Top == domino2.Bottom ||
                 domino1.Bottom == domino2.Top ||

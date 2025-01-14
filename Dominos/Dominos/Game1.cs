@@ -19,16 +19,15 @@ namespace Dominoes
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
 
-        // game variables
-        private KeyboardState currentKBState;
-        private KeyboardState previousKBState;
-
         private SpriteFont font;
 
         // domino variables
         private GameManager gameManager;
         private UI_Manager uiManager;
         private string output;
+
+        // test button variable
+        private Button testButton;
 
         /// <summary>
         /// Constructor for objects of Game1
@@ -53,6 +52,10 @@ namespace Dominoes
             output = " ";
             font = UI_Manager.SmallFont;
 
+            // initialize test button
+            Rectangle rectangle = new Rectangle(550, 325, 100, 50);
+            testButton = new Button(graphics.GraphicsDevice, rectangle, "Lol", UI_Manager.SmallFont, Color.White);
+
             base.Initialize();
         }
 
@@ -67,21 +70,27 @@ namespace Dominoes
 
         protected override void Update(GameTime gameTime)
         {
+            // only input that is not handled by InputManager is Exit() because Game object reference is required
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
-            previousKBState = currentKBState;
-            currentKBState = Keyboard.GetState();
+            // input manager update
+            InputManager.Update(gameTime);
 
-            if (SingleKeyPress(Keys.A))
+            // TODO: Add your update logic here
+            if (InputManager.SingleKeyPress(Keys.A))
             {
                 output = gameManager.TestGame(true);
             }
-            if (SingleKeyPress(Keys.D))
+            if (InputManager.SingleKeyPress(Keys.D))
             {
                 output = gameManager.TestGame(false);
             }
+
+            // test button update
+            testButton.Update(gameTime);
+            // domino manager update
+            gameManager.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -95,23 +104,15 @@ namespace Dominoes
 
             spriteBatch.Begin();
 
-            // temporary draw code to display dominoes
+            // temporary draw code to display Dominoes
             int x = 0;
             int y = 50;
 
-            // draw dominoes
+            // draw Dominoes
             List<Domino> dominoList = gameManager.Board.ToList();
             for (int i = 0; i < dominoList.Count; i++)
             {
-                if (x > 400)
-                {
-                    x = 0;
-                    y += dominoList[i].Rect.Height + 5;
-                }
-
-                x += dominoList[i].Rect.Width + 5;
-
-                dominoList[i].Draw(spriteBatch, new Vector2(325 + x, y));
+                dominoList[i].Draw(spriteBatch);
             }
 
             // draw player information
@@ -122,25 +123,20 @@ namespace Dominoes
                 spriteBatch.DrawString(font, playerInfo, new Vector2(5, 30 + (30 * i)), Color.White);
             }
 
-            // draw domino board information (dominoes that are on the board)
+            // draw domino board information (Dominoes that are on the board)
             string boardInfo = gameManager.ToString() + " ";
-            spriteBatch.DrawString(font, "Domino Board:", new Vector2(5, 175), Color.White);
-            spriteBatch.DrawString(font, boardInfo, new Vector2(5, 200), Color.White);
+            spriteBatch.DrawString(font, "Domino Board:", new Vector2(5, 150), Color.White);
+            spriteBatch.DrawString(font, boardInfo, new Vector2(5, 175), Color.White);
 
             // draw output from game manager
-            spriteBatch.DrawString(font, output, new Vector2(5, 375), Color.White);
+            spriteBatch.DrawString(font, output, new Vector2(5, 325), Color.White);
+
+            // draw test button
+            testButton.Draw(spriteBatch);
 
             spriteBatch.End();
 
             base.Draw(gameTime);
-        }
-
-        /// <summary>
-        /// Returns true if the given key is pressed
-        /// </summary>
-        private bool SingleKeyPress(Keys key)
-        {
-            return currentKBState.IsKeyDown(key) && previousKBState.IsKeyUp(key);
         }
     }
 }

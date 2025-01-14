@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -58,8 +59,14 @@ namespace Dominoes
             turn = 0;
         }
 
+        // update method
+        public void Update(GameTime gameTime)
+        {
+            dominoManager.Update(gameTime);
+        }
+
         /// <summary>
-        /// Temporary method that simulates a game of dominoes; used for testing purposes. 
+        /// Temporary method that simulates a game of Dominoes; used for testing purposes. 
         /// </summary>
         /// <param name="side"></param>
         public string TestGame(bool side)
@@ -87,13 +94,13 @@ namespace Dominoes
 
                 // exit the loop once cow has been played
                 if (cowPlayed)
-                    return "Turn: " + turn + "\nPlayer #" + (currentPlayerIndex + 1) + " \nCow has been played";
+                    return TurnInfo() + " \nCow has been played";
             }
 
             // make sure player index is correct
             currentPlayerIndex = (currentPlayerIndex == 3) ? 0 : currentPlayerIndex + 1;
 
-            // now, try to play a domino that matches the right side of the board
+            // now, play the first domino that matches the right side of the board
             List<Domino> currentPlayerHand = playerManager.PlayerList[currentPlayerIndex].PlayerHand;
             for (int i = 0; i < currentPlayerHand.Count; i++)
             {
@@ -105,7 +112,7 @@ namespace Dominoes
                         {
                             currentPlayerHand.RemoveAt(i); // remove played domino from hand
                             turn += 1;
-                            return "Turn: " + turn + "\nPlayer #" + (currentPlayerIndex + 1) + "\nSuccessful play";
+                            return TurnInfo() + "\nSuccessful play";
                         }
                     }
                     else if (!side)
@@ -114,7 +121,7 @@ namespace Dominoes
                         {
                             currentPlayerHand.RemoveAt(i); // remove played domino from hand
                             turn += 1;
-                            return "Turn: " + turn + "\nPlayer #" + (currentPlayerIndex + 1) + " \nSuccessful play";
+                            return TurnInfo() + " \nSuccessful play";
                         }
                     }
                 }
@@ -122,7 +129,41 @@ namespace Dominoes
 
             // if no match is found, maybe handle the case where no move is possible
             turn += 1;
-            return "Turn: " + turn + " \nNo matching domino found for player #" + (currentPlayerIndex + 1);
+
+            if (!GameEnd())
+                return TurnInfo() + " \nGame End" + ScoreInfo();
+
+            return TurnInfo() + " \nNo matching domino found for this player";
+        }
+
+        /// <summary>
+        /// Returns a boolean indicating whether or not the game can continue
+        /// TODO: Come back to this method and clean up
+        /// </summary>
+        public bool GameEnd()
+        {
+            bool gameContinue = false;
+
+            // for each player
+            for (int i = 0; i < playerManager.PlayerList.Count; i++)
+            {
+                Player currentPlayer = playerManager.PlayerList[i];
+
+                if (currentPlayer.PlayerHand.Count <= 0)
+                    return gameContinue;
+
+                for (int j = 0; j < currentPlayer.PlayerHand.Count; j++)
+                {
+                    if (board.IsHeadPlayable(currentPlayer.PlayerHand[j]) || board.IsTailPlayable(currentPlayer.PlayerHand[j]))
+                    {
+                        gameContinue = true;
+                        // return here since there are no more checks necessary
+                        return gameContinue;
+                    }
+                }
+            }
+
+            return gameContinue;
         }
 
         /// <summary>
@@ -140,6 +181,31 @@ namespace Dominoes
                 added = board.AddLast(domino);
 
             return added;
+        }
+
+        /// <summary>
+        /// Returns the final score of all players
+        /// </summary>
+        public string ScoreInfo()
+        {
+            string output = "";
+
+            for (int i = 0; i < playerManager.PlayerList.Count; i++)
+            {
+                Player currentPlayer = playerManager.PlayerList[i];
+
+                output += "\nPlayer #" + (i + 1) + " Score: " + currentPlayer.TotalScore();
+            }
+
+            return output;
+        }
+
+        /// <summary>
+        /// Returns information about the current turn
+        /// </summary>
+        public string TurnInfo()
+        {
+            return "Turn: " + turn + "\nPlayer #" + (currentPlayerIndex + 1);
         }
 
         /// <summary>

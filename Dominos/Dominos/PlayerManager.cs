@@ -26,14 +26,14 @@ namespace Dominoes
         }
 
         // constructor for objects of class PlayerManager
-        public PlayerManager(Queue<Domino> dominoSet)
+        public PlayerManager(Queue<Domino> Dominoeset)
         {
-            SetPlayerHands(dominoSet);
+            SetPlayerHands(Dominoeset);
             PrintPlayerList();
         }
 
         // initializes players and player hands
-        public void SetPlayerHands(Queue<Domino> dominoSet)
+        public void SetPlayerHands(Queue<Domino> Dominoeset)
         {
             playerList = new List<Player>();
 
@@ -46,10 +46,10 @@ namespace Dominoes
             // for each domino in given domino set, add to player hand
             for (int i = 0; i < playerList.Count; i++)
             {
-                // while the player hand does not have 7 dominoes
+                // while the player hand does not have 7 Dominoes
                 while (playerList[i].PlayerHand.Count < 7)
                 {
-                    playerList[i].PlayerHand.Add(dominoSet.Dequeue());
+                    playerList[i].PlayerHand.Add(Dominoeset.Dequeue());
                 }
             }
         }
