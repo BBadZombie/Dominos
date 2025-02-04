@@ -105,6 +105,7 @@ namespace Dominoes
                 // this condition could also be true if the dominos previous field is not null
                 if (i >= 1)
                 {
+                    // this code determines where domino should be drawn
                     if (!this[i].IsDouble() && !this[i - 1].IsDouble()) // current and previous are not doubles
                     {
                         x = this[i - 1].Position.Right + texture.Width;
@@ -125,6 +126,7 @@ namespace Dominoes
                     y += texture.Height + 5;
                 }
 
+                // this code determines how to rotate based off if the domino is a double or not
                 if (!this[i].IsDouble())
                 {
                     // x += texture.Width * 2;

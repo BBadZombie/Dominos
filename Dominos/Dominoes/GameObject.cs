@@ -96,7 +96,7 @@ namespace Dominoes
         /// Draw method for objects of class GameObject that draws
         /// game object at a given position
         /// </summary>
-        public void Draw(SpriteBatch sb, int x, int y, float rotationAngle)
+        public void DrawColor(SpriteBatch sb, int x, int y, float rotationAngle, Color color)
         {
             this.X = x;
             this.Y = y;

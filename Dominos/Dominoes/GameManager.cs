@@ -93,7 +93,12 @@ namespace Dominoes
             for (int i = 0; i < PlayerList.Count; i++)
             {
                 string playerInfo = "#" + (i + 1) + ": " + PlayerList[i].ToString() + " ";
-                spriteBatch.DrawString(font, playerInfo, new Vector2(5, 30 + (30 * i)), Color.White);
+
+                // draw player information and highlight current player
+                if (i == currentPlayerIndex)
+                    spriteBatch.DrawString(font, playerInfo, new Vector2(5, 30 + (30 * i)), Color.DarkGreen);
+                else
+                    spriteBatch.DrawString(font, playerInfo, new Vector2(5, 30 + (30 * i)), Color.White);
             }
 
             // draw domino board information (Dominoes that are on the board)
@@ -203,6 +208,29 @@ namespace Dominoes
         }
 
         public bool TryPlayDominoFromHand(Player player, bool side)
+        {
+            List<Domino> currentHand = player.Hand;
+
+            foreach (var domino in currentHand)
+            {
+                bool canPlay = side ? board.IsHeadPlayable(domino) : board.IsTailPlayable(domino);
+
+                if (canPlay)
+                {
+                    bool dominoAdded = AddDominoToBoard(domino, side);
+                    if (dominoAdded)
+                    {
+                        currentHand.Remove(domino);
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        // takes an index for a specific domino to play
+        public bool PlayGivenDomino(Player player, int dominoIndex, bool side)
         {
             List<Domino> currentHand = player.Hand;
 
