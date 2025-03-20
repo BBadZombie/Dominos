@@ -5,6 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System.DirectoryServices.ActiveDirectory;
+
 namespace Dominoes
 {
     /**
@@ -53,6 +57,32 @@ namespace Dominoes
             hand.Remove(domino1);
 
             return domino1;
+        }
+
+        /// <summary>
+        /// Draws hand of the given player index
+        /// </summary>
+        public void DrawHand(SpriteBatch spriteBatch, GameTime gameTime, int playerIndex, int selectedDominoIndex)
+        {
+            int x = 380;
+            int y = 450;
+
+            // draw given player hand
+            for (int i = 0; i < hand.Count; i++)
+            {
+                x += hand[i].Texture.Width;
+
+                if (x > 950)
+                {
+                    x = 380;
+                    y += hand[i].Texture.Height + 5;
+                }
+
+                if (i == selectedDominoIndex)
+                    hand[i].DrawWithSelector(spriteBatch, x, y, 0f, selectedDominoIndex);
+                else
+                    hand[i].Draw(spriteBatch, x, y, 0f);
+            }
         }
 
         public int TotalScore()

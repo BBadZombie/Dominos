@@ -10,9 +10,6 @@ using System.Threading.Tasks;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using SharpDX.Direct3D9;
-using SharpDX.DirectWrite;
-using SharpDX.DXGI;
 using Color = Microsoft.Xna.Framework.Color;
 
 namespace Dominoes
@@ -44,6 +41,8 @@ namespace Dominoes
         private int turn;
         private bool gameOver;
         private bool printWinner;
+        private int selectedDominoIndex = 0;
+        private bool selectedSide = false;
         #endregion
 
         #region Properties
@@ -117,24 +116,8 @@ namespace Dominoes
         /// </summary>
         public void DrawPlayerHand(SpriteBatch spriteBatch, GameTime gameTime, int playerIndex)
         {
-            int x = 380;
-            int y = 450;
-
-            // draw given player hand
-            foreach (Domino domino in PlayerList[playerIndex].Hand)
-            {
-                x += domino.Texture.Width;
-
-                if (x > 950)
-                {
-                    x = 380;
-                    y += domino.Texture.Height + 5;
-                }
-
-                domino.Draw(spriteBatch, x, y, 0f);
-            }
-
-            spriteBatch.DrawString(UI_Manager.SmallFont, "Player #" + (currentPlayerIndex + 1), new Vector2(450, 380), Color.White);
+            PlayerList[currentPlayerIndex].DrawHand(spriteBatch, gameTime, currentPlayerIndex, selectedDominoIndex);
+            spriteBatch.DrawString(UI_Manager.SmallFont, "Player #" + (currentPlayerIndex + 1), new Vector2(450, 370), Color.White);
         }
         #endregion
 
@@ -174,7 +157,8 @@ namespace Dominoes
                 IncrementPlayerTurn();
 
                 // now, play the first domino that matches the right side of the board
-                output = AutoPlayDomino(side);
+                // output = AutoPlayDomino(side);
+                output = ManuallyPlayDomino(side);
                 turn++;
             }
 
@@ -193,9 +177,24 @@ namespace Dominoes
             List<Domino> currentHand = PlayerList[currentPlayerIndex].Hand;
             string output = string.Empty;
 
-            
-
             bool played = TryPlayDominoFromHand(PlayerList[currentPlayerIndex], side);
+
+            if (played)
+                output = $"{TurnInfo()}\nSuccessful play";
+            else
+                output = $"{TurnInfo()}\nTurn skipped.";
+
+            Debug.Print(output, Debug.Level.High);
+
+            return output;
+        }
+
+        public string ManuallyPlayDomino(bool side)
+        {
+            List<Domino> currentHand = PlayerList[currentPlayerIndex].Hand;
+            string output = string.Empty;
+
+            bool played = PlayGivenDomino(PlayerList[currentPlayerIndex], side, selectedDominoIndex);
 
             if (played)
                 output = $"{TurnInfo()}\nSuccessful play";
@@ -230,22 +229,21 @@ namespace Dominoes
         }
 
         // takes an index for a specific domino to play
-        public bool PlayGivenDomino(Player player, int dominoIndex, bool side)
+        public bool PlayGivenDomino(Player player, bool side, int dominoIndex)
         {
             List<Domino> currentHand = player.Hand;
 
-            foreach (var domino in currentHand)
-            {
-                bool canPlay = side ? board.IsHeadPlayable(domino) : board.IsTailPlayable(domino);
+            Domino domino = currentHand[dominoIndex];
 
-                if (canPlay)
+            bool canPlay = side ? board.IsHeadPlayable(domino) : board.IsTailPlayable(domino);
+
+            if (canPlay)
+            {
+                bool dominoAdded = AddDominoToBoard(domino, side);
+                if (dominoAdded)
                 {
-                    bool dominoAdded = AddDominoToBoard(domino, side);
-                    if (dominoAdded)
-                    {
-                        currentHand.Remove(domino);
-                        return true;
-                    }
+                    currentHand.Remove(domino);
+                    return true;
                 }
             }
 
@@ -272,6 +270,14 @@ namespace Dominoes
             {
                 domino.IsVisible = true;
             }
+        }
+
+        public void SelectDomino(bool direction)
+        {
+            if (!direction && selectedDominoIndex < 6)
+                selectedDominoIndex += 1;
+            else if (direction && selectedDominoIndex > 0)
+                selectedDominoIndex -= 1;
         }
 
         /// <summary>

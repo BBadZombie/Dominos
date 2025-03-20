@@ -121,6 +121,15 @@ namespace Dominoes
                 {
                     output = gameManager.TestGame(false);
                 }
+
+                if (InputManager.SingleKeyPress(Keys.Left))
+                {
+                    gameManager.SelectDomino(true);
+                }
+                if (InputManager.SingleKeyPress(Keys.Right))
+                {
+                    gameManager.SelectDomino(false);
+                }
             }
         }
 

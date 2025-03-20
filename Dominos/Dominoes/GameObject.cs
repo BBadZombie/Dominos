@@ -96,14 +96,13 @@ namespace Dominoes
         /// Draw method for objects of class GameObject that draws
         /// game object at a given position
         /// </summary>
-        public void DrawColor(SpriteBatch sb, int x, int y, float rotationAngle, Color color)
+        public void Draw(SpriteBatch sb, int x, int y, float rotationAngle)
         {
             this.X = x;
             this.Y = y;
 
             if (isVisible)
             {
-                Vector2 newPosition = new Vector2(this.X, this.Y);
                 Vector2 newOrigin = new Vector2(position.Width / 2, position.Height / 2);
                 sb.Draw(texture, this.Position, null, Color.White, rotationAngle, newOrigin, SpriteEffects.None, 0f);
             }
@@ -113,16 +112,28 @@ namespace Dominoes
         /// Draw method for objects of class GameObject that draws
         /// game object at a given position
         /// </summary>
-        public void Draw(SpriteBatch sb, int x, int y, float rotationAngle)
+        public void DrawColor(SpriteBatch sb, int x, int y, float rotationAngle, Color color)
         {
             this.X = x;
             this.Y = y;
 
             if (isVisible)
             {
-                Vector2 newPosition = new Vector2(this.X, this.Y);
                 Vector2 newOrigin = new Vector2(position.Width / 2, position.Height / 2);
-                sb.Draw(texture, this.Position, null, Color.White, rotationAngle, newOrigin, SpriteEffects.None, 0f);
+                sb.Draw(texture, this.Position, null, color, rotationAngle, newOrigin, SpriteEffects.None, 0f);
+            }
+        }
+
+        public void DrawWithSelector(SpriteBatch sb, int x, int y, float rotationAngle, int selectedDominoIndex)
+        {
+            // draw this game object
+            Draw(sb, x, y, rotationAngle);
+
+            // draw selector above this game object
+            if (isVisible)
+            {
+                Vector2 newOrigin = new Vector2(position.X - position.Width / 4 + 1, position.Y - 55);
+                sb.DrawString(UI_Manager.SmallFont, "V", newOrigin, Color.White);
             }
         }
     }
