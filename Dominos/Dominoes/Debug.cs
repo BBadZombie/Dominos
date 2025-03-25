@@ -34,7 +34,7 @@ namespace Dominoes
 
         // this variable represents the current level of debug messages that 
         // are being printed
-        static Level currentLevel = Level.Medium;
+        static Level currentLevel = Level.High;
 
         /// <summary>
         /// Prints the given input string if the debug level is set to
@@ -61,7 +61,7 @@ namespace Dominoes
         private static int LevelToInt(Level level)
         {
             int levelValue = -1;
-
+            
             if (level == Level.Low)
                 levelValue = 0;
 

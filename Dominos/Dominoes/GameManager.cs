@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SharpDX.DXGI;
 using Color = Microsoft.Xna.Framework.Color;
 
 namespace Dominoes
@@ -62,9 +63,12 @@ namespace Dominoes
             playerManager = new PlayerManager(dominoManager.GetDominoQueue());
 
             board = new DominoBoard();
-            turn = 0;
+            // starts at 2 because cow is automatically played (for now)
+            turn = 2;
             gameOver = true;
             printWinner = true;
+            currentPlayerIndex = getFirstPlayerIndex();
+            Debug.Print("" + currentPlayerIndex, Debug.Level.High);
         }
 
         /// <summary>
@@ -148,19 +152,20 @@ namespace Dominoes
             {
                 output = $"{TurnInfo()}\nCow has been played.";
                 Debug.Print(output, Debug.Level.High);
+                turn++;
+                IncrementPlayerTurn();
                 return output;
             }
 
             if (gameOver)
             {
-                // move on to the next player
-                IncrementPlayerTurn();
-
                 // now, play the first domino that matches the right side of the board
                 // output = AutoPlayDomino(side);
                 output = ManuallyPlayDomino(side);
-                turn++;
             }
+
+            IncrementPlayerTurn();
+            turn++;
 
             if (!string.IsNullOrEmpty(output))
                 return output;
@@ -174,9 +179,7 @@ namespace Dominoes
         // are still incremented and printing to debug console
         public string AutoPlayDomino(bool side)
         {
-            List<Domino> currentHand = PlayerList[currentPlayerIndex].Hand;
             string output = string.Empty;
-
             bool played = TryPlayDominoFromHand(PlayerList[currentPlayerIndex], side);
 
             if (played)
@@ -191,9 +194,7 @@ namespace Dominoes
 
         public string ManuallyPlayDomino(bool side)
         {
-            List<Domino> currentHand = PlayerList[currentPlayerIndex].Hand;
             string output = string.Empty;
-
             bool played = PlayGivenDomino(PlayerList[currentPlayerIndex], side, selectedDominoIndex);
 
             if (played)
@@ -331,12 +332,30 @@ namespace Dominoes
                 if (cow != null)
                 {
                     AddDominoToBoard(player.PlayDomino(cow), side);
-                    currentPlayerIndex = PlayerList.IndexOf(player);
-                    turn++;
+                    // set current player index to player that comes after cow player
+                    // currentPlayerIndex = (PlayerList.IndexOf(player) + 1) % PlayerList.Count;
                     return true;
                 }
             }
+
             return false;
+        }
+
+        // finds which player has the 6 | 6 domino and sets currentPlayerIndex to that players index
+        // returns -1 if something goes wrong
+        private int getFirstPlayerIndex()
+        {
+            foreach (var player in PlayerList)
+            {
+                Domino cow = player.HasCow();
+                if (cow != null)
+                {
+                    // set current player index to player that comes after cow player
+                    return PlayerList.IndexOf(player);
+                }
+            }
+
+            return 0;
         }
 
         /// <summary>
