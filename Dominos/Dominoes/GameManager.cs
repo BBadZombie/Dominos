@@ -165,7 +165,13 @@ namespace Dominoes
                 output = ManuallyPlayDomino(side);
             }
 
-            //IncrementPlayerTurn();
+            // automatically adjust domino index for current players hand
+            // TODO: address repeated code
+            int prevHandCount = PlayerList[currentPlayerIndex].Hand.Count;
+
+            if (selectedDominoIndex >= prevHandCount)
+                selectedDominoIndex = prevHandCount - 1;
+
             turn++;
 
             if (!string.IsNullOrEmpty(output))
@@ -232,11 +238,14 @@ namespace Dominoes
         }
 
         // takes an index for a specific domino to play
+        // TODO: address repeated code from select domino index
         public bool PlayGivenDomino(Player player, bool side, int dominoIndex)
         {
             List<Domino> currentHand = player.Hand;
-
             Domino domino = currentHand[dominoIndex];
+
+            Debug.Print("Given Domino Index: " + dominoIndex, Debug.Level.High);
+            Debug.Print("Current Hand Count: " + currentHand.Count, Debug.Level.High);
 
             bool canPlay = side ? board.IsHeadPlayable(domino) : board.IsTailPlayable(domino);
 
@@ -292,7 +301,9 @@ namespace Dominoes
             else if (direction && selectedDominoIndex > 0)
             {
                 selectedDominoIndex -= 1;
-            }        
+            }
+
+            Debug.Print("Domino Index: " + selectedDominoIndex, Debug.Level.High);
         }
 
         /// <summary>
