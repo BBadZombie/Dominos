@@ -97,7 +97,7 @@ namespace Dominoes
         {
             // draw Dominoes
             Texture2D texture = UI_Manager.GetTexture("scaled_" + 1 + " | " + 1);
-            int x = 450;
+            int x = 600;
             int y = 150;
 
             for (int i = 0; i < Count; i++)
@@ -122,7 +122,7 @@ namespace Dominoes
 
                 if (x > 950)
                 {
-                    x = 450;
+                    x = 600;
                     y += texture.Height + 5;
                 }
 

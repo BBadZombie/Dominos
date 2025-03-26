@@ -150,10 +150,10 @@ namespace Dominoes
             cowPlayed = TryPlayCowDomino(side);
             if (cowPlayed)
             {
+                IncrementPlayerTurn();
                 output = $"{TurnInfo()}\nCow has been played.";
                 Debug.Print(output, Debug.Level.High);
                 turn++;
-                IncrementPlayerTurn();
                 return output;
             }
 
@@ -161,10 +161,11 @@ namespace Dominoes
             {
                 // now, play the first domino that matches the right side of the board
                 // output = AutoPlayDomino(side);
+                IncrementPlayerTurn();
                 output = ManuallyPlayDomino(side);
             }
 
-            IncrementPlayerTurn();
+            //IncrementPlayerTurn();
             turn++;
 
             if (!string.IsNullOrEmpty(output))
@@ -195,7 +196,8 @@ namespace Dominoes
         public string ManuallyPlayDomino(bool side)
         {
             string output = string.Empty;
-            bool played = PlayGivenDomino(PlayerList[currentPlayerIndex], side, selectedDominoIndex);
+            Player previousPlayer = PlayerList[GetPreviousPlayerIndex()];
+            bool played = PlayGivenDomino(previousPlayer, side, selectedDominoIndex);
 
             if (played)
                 output = $"{TurnInfo()}\nSuccessful play";
@@ -271,14 +273,26 @@ namespace Dominoes
             {
                 domino.IsVisible = true;
             }
+
+            Debug.Print("Player Turn Incremented: " + currentPlayerIndex, Debug.Level.High);
         }
 
         public void SelectDomino(bool direction)
         {
-            if (!direction && selectedDominoIndex < 6)
-                selectedDominoIndex += 1;
+            int prevHandCount = PlayerList[currentPlayerIndex].Hand.Count;
+
+            if (selectedDominoIndex >= prevHandCount)
+            {
+                selectedDominoIndex = prevHandCount - 1;
+            }
+            else if (!direction && selectedDominoIndex < prevHandCount)
+            {
+                selectedDominoIndex = (selectedDominoIndex + 1) % prevHandCount;
+            }
             else if (direction && selectedDominoIndex > 0)
+            {
                 selectedDominoIndex -= 1;
+            }        
         }
 
         /// <summary>
@@ -356,6 +370,11 @@ namespace Dominoes
             }
 
             return 0;
+        }
+
+        private int GetPreviousPlayerIndex()
+        {
+            return (currentPlayerIndex == 0) ? 3 : currentPlayerIndex - 1;
         }
 
         /// <summary>
