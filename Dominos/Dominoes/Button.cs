@@ -111,7 +111,7 @@ namespace Dominoes
             }
 
             // drag function
-            Drag(gameTime);
+            // Drag(gameTime);
 
             prevMState = mState;
         }

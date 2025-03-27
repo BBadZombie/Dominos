@@ -13,6 +13,8 @@ using Microsoft.Xna.Framework.Graphics;
 using SharpDX.DXGI;
 using Color = Microsoft.Xna.Framework.Color;
 
+using Microsoft.Xna.Framework.Input;
+
 namespace Dominoes
 {
     /**
@@ -42,7 +44,7 @@ namespace Dominoes
         private int turn;
         private bool gameOver;
         private bool printWinner;
-        private int selectedDominoIndex = 0;
+        private int selectedDominoIndex;
         private bool selectedSide = false;
         #endregion
 
@@ -68,6 +70,7 @@ namespace Dominoes
             gameOver = true;
             printWinner = true;
             currentPlayerIndex = getFirstPlayerIndex();
+            selectedDominoIndex = 0;
             Debug.Print("" + currentPlayerIndex, Debug.Level.High);
         }
 
@@ -77,6 +80,7 @@ namespace Dominoes
         public void Update(GameTime gameTime)
         {
             dominoManager.Update(gameTime);
+            GetPlayerInput();
         }
 
         /// <summary>
@@ -116,12 +120,41 @@ namespace Dominoes
         }
 
         /// <summary>
+        /// Checks for player input, if A or D is pressed and game end condition
+        /// has not been met. 
+        /// </summary>
+        private string GetPlayerInput()
+        {
+            string output = "";
+
+            if (InputManager.SingleKeyPress(Keys.A))
+            {
+                output = TestGame(true);
+            }
+            if (InputManager.SingleKeyPress(Keys.D))
+            {
+                output = TestGame(false);
+            }
+
+            if (InputManager.SingleKeyPress(Keys.Left))
+            {
+                SelectDomino(true);
+            }
+            if (InputManager.SingleKeyPress(Keys.Right))
+            {
+                SelectDomino(false);
+            }
+
+            return output;
+        }
+
+        /// <summary>
         /// Draws hand of the given player index
         /// </summary>
         public void DrawPlayerHand(SpriteBatch spriteBatch, GameTime gameTime, int playerIndex)
         {
-            PlayerList[currentPlayerIndex].DrawHand(spriteBatch, gameTime, currentPlayerIndex, selectedDominoIndex);
             spriteBatch.DrawString(UI_Manager.SmallFont, "Player #" + (currentPlayerIndex + 1), new Vector2(450, 370), Color.White);
+            PlayerList[currentPlayerIndex].DrawHand(spriteBatch, gameTime, currentPlayerIndex, selectedDominoIndex);
         }
         #endregion
 

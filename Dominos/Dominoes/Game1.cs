@@ -17,6 +17,13 @@ namespace Dominoes
      *  - Added boolean to toggle auto play on/off for easier testing
      */
 
+    // state enums
+    public enum State
+    {
+        MainMenu,
+        Game
+    }
+
     public class Game1 : Game
     {
         // variable declarations
@@ -26,7 +33,6 @@ namespace Dominoes
         private SpriteFont font;
 
         // domino variables
-        private GameManager gameManager;
         private UI_Manager uiManager;
         private string output;
 
@@ -36,6 +42,12 @@ namespace Dominoes
 
         // bool to toggle auto play on/off
         bool auto = false;
+
+        // what state to draw/update
+        public static State currentState;
+
+        MainMenuState mainMenuState;
+        GameManager gameState;
 
         /// <summary>
         /// Constructor for objects of Game1
@@ -58,7 +70,9 @@ namespace Dominoes
         {
             // initialize managers
             uiManager = new UI_Manager(spriteBatch, Content);
-            gameManager = new GameManager();
+            gameState = new GameManager();
+            mainMenuState = new MainMenuState(GraphicsDevice);
+            mainMenuState.Initialize();
 
             // initialize other fields
             output = " ";
@@ -67,6 +81,9 @@ namespace Dominoes
             // random for testing purposes
             rng = new Random();
             flag = true;
+
+            // default state should be main menu, but will remain game for testing
+            currentState = State.MainMenu;
 
             base.Initialize();
         }
@@ -89,48 +106,23 @@ namespace Dominoes
             // input manager update
             InputManager.Update(gameTime);
 
-            // get index of winning player
-            // gameManager.GetWinner();
+            // look for enter to swap game state
+            if (InputManager.SingleKeyPress(Keys.Enter))
+            {
+                currentState = (currentState == State.MainMenu) ? State.Game : State.MainMenu;
+            }
 
-            if (auto)
-                AutoTest(); // for automated testing
-            else
-                GetPlayerInput(); // for manual testing
-
-            // domino manager update
-            gameManager.Update(gameTime);
+            switch (currentState)
+            {
+                case State.MainMenu:
+                    mainMenuState.Update(gameTime);
+                    break;
+                case State.Game:
+                    gameState.Update(gameTime);
+                    break;
+            }
 
             base.Update(gameTime);
-        }
-
-        /// <summary>
-        /// Checks for player input, if A or D is pressed and game end condition
-        /// has not been met. 
-        /// </summary>
-        private void GetPlayerInput()
-        {
-            // if game end condition isnt met
-            if (gameManager.GameOver != false)
-            {
-                // TODO: Add your update logic here
-                if (InputManager.SingleKeyPress(Keys.A))
-                {
-                    output = gameManager.TestGame(true);
-                }
-                if (InputManager.SingleKeyPress(Keys.D))
-                {
-                    output = gameManager.TestGame(false);
-                }
-
-                if (InputManager.SingleKeyPress(Keys.Left))
-                {
-                    gameManager.SelectDomino(true);
-                }
-                if (InputManager.SingleKeyPress(Keys.Right))
-                {
-                    gameManager.SelectDomino(false);
-                }
-            }
         }
 
         /// <summary>
@@ -139,19 +131,19 @@ namespace Dominoes
         private void AutoTest()
         {
             // if game end condition isnt met
-            if (gameManager.GameOver != false)
+            if (gameState.GameOver != false)
             {
                 flag = rng.Next(2) == 0;
                 Debug.Print(flag.ToString(), Debug.Level.Low);
 
                 if (flag)
-                    output = gameManager.TestGame(true);
+                    output = gameState.TestGame(true);
                 else
-                    output = gameManager.TestGame(false);
+                    output = gameState.TestGame(false);
             }
             else 
             {
-                gameManager.GetWinningPlayer();
+                gameState.GetWinningPlayer();
             }
         }
 
@@ -164,8 +156,22 @@ namespace Dominoes
 
             spriteBatch.Begin();
 
-            // draw game manager stuff
-            gameManager.Draw(spriteBatch, gameTime, output);
+            // finite state machine
+            switch (currentState)
+            {
+                case State.MainMenu:
+                    mainMenuState.Draw(spriteBatch);
+                    break;
+                case State.Game:
+                    gameState.Draw(spriteBatch, gameTime, output);
+                    break;
+            }
+
+            // draw game state
+            if (currentState == State.Game)
+            {
+                gameState.Draw(spriteBatch, gameTime, output);
+            }
 
             spriteBatch.End();
 
