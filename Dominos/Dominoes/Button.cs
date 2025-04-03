@@ -135,6 +135,19 @@ namespace Dominoes
             }
         }
 
+        public void SetPosition(int x, int y)
+        {
+            // position of rectangle
+            position.X = x; 
+            position.Y = y;
+
+            // position of text
+            Vector2 textSize = font.MeasureString(text);
+            float textX = (position.X + position.Width / 2) - textSize.X / 2;
+            float textY = (position.Y + position.Height / 2) - textSize.Y / 2;
+            textLoc = new Vector2(textX, textY);
+        }
+
         /// <summary>
         /// Override the GameObject Draw() to draw the button and then
         /// overlay it with text.

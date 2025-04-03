@@ -21,7 +21,8 @@ namespace Dominoes
     public enum State
     {
         MainMenu,
-        Game
+        Game,
+        Exit
     }
 
     public class Game1 : Game
@@ -49,6 +50,9 @@ namespace Dominoes
         MainMenuState mainMenuState;
         GameManager gameState;
 
+        public static int windowWidth = 1000;
+        public static int windowHeight = 500;
+
         /// <summary>
         /// Constructor for objects of Game1
         /// </summary>
@@ -59,8 +63,8 @@ namespace Dominoes
             IsMouseVisible = true;
 
             // set window size
-            graphics.PreferredBackBufferWidth = 1000;  // width
-            graphics.PreferredBackBufferHeight = 500; // height
+            graphics.PreferredBackBufferWidth = windowWidth;  // width
+            graphics.PreferredBackBufferHeight = windowHeight; // height
         }
 
         /// <summary>
@@ -119,6 +123,9 @@ namespace Dominoes
                     break;
                 case State.Game:
                     gameState.Update(gameTime);
+                    break;
+                case State.Exit:
+                    Exit();
                     break;
             }
 
