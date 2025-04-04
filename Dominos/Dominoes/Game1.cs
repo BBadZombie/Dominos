@@ -22,6 +22,7 @@ namespace Dominoes
     {
         MainMenu,
         Game,
+        Win,
         Exit
     }
 
@@ -123,6 +124,9 @@ namespace Dominoes
                     break;
                 case State.Game:
                     gameState.Update(gameTime);
+                    break;
+                case State.Win:
+                    winState.Update(gameTime);
                     break;
                 case State.Exit:
                     Exit();
