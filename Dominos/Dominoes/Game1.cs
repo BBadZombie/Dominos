@@ -42,14 +42,12 @@ namespace Dominoes
         Random rng;
         bool flag;
 
-        // bool to toggle auto play on/off
-        bool auto = false;
-
         // what state to draw/update
         public static State currentState;
 
         MainMenuState mainMenuState;
         GameManager gameState;
+        WinState winState;
 
         public static int windowWidth = 1000;
         public static int windowHeight = 500;
@@ -75,9 +73,13 @@ namespace Dominoes
         {
             // initialize managers
             uiManager = new UI_Manager(spriteBatch, Content);
+
             gameState = new GameManager();
             mainMenuState = new MainMenuState(GraphicsDevice);
             mainMenuState.Initialize();
+            winState = new WinState(GraphicsDevice);
+            winState.Initialize();
+
 
             // initialize other fields
             output = " ";
@@ -137,28 +139,6 @@ namespace Dominoes
         }
 
         /// <summary>
-        /// Automatically plays the game. Used for testing purposes.
-        /// </summary>
-        private void AutoTest()
-        {
-            // if game end condition isnt met
-            if (gameState.GameOver != false)
-            {
-                flag = rng.Next(2) == 0;
-                Debug.Print(flag.ToString(), Debug.Level.Low);
-
-                if (flag)
-                    output = gameState.TestGame(true);
-                else
-                    output = gameState.TestGame(false);
-            }
-            else 
-            {
-                gameState.GetWinningPlayer();
-            }
-        }
-
-        /// <summary>
         /// Draws content for the game
         /// </summary>
         protected override void Draw(GameTime gameTime)
@@ -175,6 +155,9 @@ namespace Dominoes
                     break;
                 case State.Game:
                     gameState.Draw(spriteBatch, gameTime, output);
+                    break;
+                case State.Win:
+                    winState.Draw(spriteBatch);
                     break;
             }
 

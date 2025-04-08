@@ -176,6 +176,7 @@ namespace Dominoes
             {
                 output = TurnInfo() + " \nGame End." + ScoreInfo();
                 Debug.Print(output, Debug.Level.High);
+                Game1.currentState = State.Win;
                 return output;
             }
 
@@ -193,9 +194,10 @@ namespace Dominoes
             if (gameOver)
             {
                 // now, play the first domino that matches the right side of the board
-                // output = AutoPlayDomino(side);
                 IncrementPlayerTurn();
-                output = ManuallyPlayDomino(side);
+                output = AutoPlayDomino(side);
+                WinState.titleText = "Player #" + GetWinningPlayer() + " Wins";
+                // output = ManuallyPlayDomino(side);
             }
 
             // automatically adjust domino index for current players hand

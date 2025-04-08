@@ -23,7 +23,7 @@ namespace Dominoes
         int buttonWidth = 80;
         int buttonHeight = 40;
 
-        List<Button> buttons;
+        List<Button> buttons = new List<Button>();
 
         public MainMenuState(GraphicsDevice graphicsDevice)
         {
