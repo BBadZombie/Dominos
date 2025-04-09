@@ -196,7 +196,6 @@ namespace Dominoes
                 // now, play the first domino that matches the right side of the board
                 IncrementPlayerTurn();
                 output = AutoPlayDomino(side);
-                WinState.titleText = "Player #" + GetWinningPlayer() + " Wins";
                 // output = ManuallyPlayDomino(side);
             }
 
@@ -354,8 +353,9 @@ namespace Dominoes
                 {
                     if (printWinner)
                     {
-                        Debug.Print("Player " + (i + 1) + " Wins.", Debug.Level.High);
-                        printWinner = false;
+                        string output = "Player " + (i + 1) + " Wins.";
+                        Debug.Print(output, Debug.Level.High);
+                        printWinner = true;
                     }
 
                     return i + 1;
@@ -511,9 +511,10 @@ namespace Dominoes
         public string ScoreInfo()
         {
             string output = string.Empty;
+            int winningPlayerIndex = GetWinningPlayer();
 
-            if (GetWinningPlayer() > 0)
-                output += "\nPlayer " + GetWinningPlayer() + " Wins.";
+            if (winningPlayerIndex >= 0)
+                output += "\nPlayer " + winningPlayerIndex + " Wins.";
 
             for (int i = 0; i < PlayerList.Count; i++)
             {

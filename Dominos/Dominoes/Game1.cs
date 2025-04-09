@@ -49,6 +49,8 @@ namespace Dominoes
         GameManager gameState;
         WinState winState;
 
+        public static string winText = "";
+
         public static int windowWidth = 1000;
         public static int windowHeight = 500;
 
@@ -128,6 +130,9 @@ namespace Dominoes
                     gameState.Update(gameTime);
                     break;
                 case State.Win:
+                    // find a way to not constantly set this
+                    winText = "Player " + gameState.GetWinningPlayer() + " Wins!";
+                    winState.UpdateWinTitle(winText);
                     winState.Update(gameTime);
                     break;
                 case State.Exit:

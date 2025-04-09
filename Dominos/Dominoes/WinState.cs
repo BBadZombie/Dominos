@@ -11,13 +11,13 @@ namespace Dominoes
     internal class WinState
     {
         private GraphicsDevice graphicsDevice;
-        Button winText;
+        Button winTitle;
         Button returnButton;
         Button exitButton;
 
         int titleWidth = 200;
         int titleHeight = 100;
-        public static string titleText;
+        public string titleText = Game1.winText;
 
         int buttonWidth = 80;
         int buttonHeight = 40;
@@ -31,7 +31,8 @@ namespace Dominoes
 
         public void Initialize()
         {
-            winText = new Button(graphicsDevice, new Rectangle(Game1.windowWidth/2 - titleWidth/2, Game1.windowHeight/5, titleWidth, titleHeight), titleText, UI_Manager.LargeFont, Color.White);
+            // 
+            winTitle = new Button(graphicsDevice, new Rectangle(Game1.windowWidth/2 - titleWidth/2, Game1.windowHeight/5, titleWidth, titleHeight), titleText, UI_Manager.LargeFont, Color.White);
             
             returnButton = new Button(graphicsDevice, new Rectangle(0, 0, buttonWidth, buttonHeight), "Menu", UI_Manager.SmallFont, Color.White);
             returnButton.OnLeftButtonClick += ReturnButtonClick;
@@ -39,7 +40,7 @@ namespace Dominoes
             exitButton.OnLeftButtonClick += ExitButtonClick;
 
             buttons = new List<Button>();
-            buttons.Add(winText);
+            buttons.Add(winTitle);
             buttons.Add(returnButton);
             buttons.Add(exitButton);
 
@@ -62,6 +63,11 @@ namespace Dominoes
         public void ExitButtonClick()
         {
             Game1.currentState = State.Exit;
+        }
+
+        public void UpdateWinTitle(string text)
+        {
+            winTitle.SetText(text);
         }
 
         public void Update(GameTime gameTime)

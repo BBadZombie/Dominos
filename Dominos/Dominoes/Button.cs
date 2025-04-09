@@ -148,6 +148,12 @@ namespace Dominoes
             textLoc = new Vector2(textX, textY);
         }
 
+        public void SetText(string text)
+        {
+            this.text = text;
+            SetPosition(position.X, position.Y);
+        }
+
         /// <summary>
         /// Override the GameObject Draw() to draw the button and then
         /// overlay it with text.
